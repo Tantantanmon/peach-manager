@@ -135,8 +135,8 @@ function startCapture(rowId, buttonEl) {
     if (capturingRow) cancelCapture();
 
     capturingRow = { rowId, buttonEl };
-    buttonEl.textContent = '키를 누르세요… (Esc 취소)';
-    buttonEl.classList.add('capturing');
+    buttonEl.textContent = '키를 누르세요…';
+    buttonEl.closest('.pm-row')?.classList.add('capturing');
 }
 
 function cancelCapture() {
@@ -144,7 +144,7 @@ function cancelCapture() {
     const settings = getSettings();
     const row = settings.shortcuts.find(s => s.id === capturingRow.rowId);
     capturingRow.buttonEl.textContent = row?.keyCombo || '키 입력';
-    capturingRow.buttonEl.classList.remove('capturing');
+    capturingRow.buttonEl.closest('.pm-row')?.classList.remove('capturing');
     capturingRow = null;
 }
 
@@ -168,8 +168,7 @@ function handleCapture(event) {
         saveSettings();
         checkDuplicateAndWarn(combo, row.id);
     }
-    capturingRow.buttonEl.textContent = combo;
-    capturingRow.buttonEl.classList.remove('capturing');
+    capturingRow.buttonEl.closest('.pm-row')?.classList.remove('capturing');
     capturingRow = null;
     renderList();
 }
@@ -200,11 +199,15 @@ function renderList() {
     for (const row of settings.shortcuts) {
         const $row = $(`
             <div class="pm-row" data-id="${row.id}">
-                <button class="pm-capture menu_button" type="button">${row.keyCombo ? escapeHtml(row.keyCombo) : '키 입력'}</button>
-                <input type="text" class="pm-label text_pole" placeholder="설명 (예: 키스)" value="${escapeAttr(row.label || '')}">
-                <input type="text" class="pm-command text_pole" placeholder='실행할 명령어 (예: /run &quot;키스&quot;)' value="${escapeAttr(row.command || '')}">
-                <button class="pm-fill-qr menu_button" type="button" title="QR 라벨로 채우기">🏷</button>
-                <button class="pm-delete menu_button" type="button" title="삭제">🗑</button>
+                <div class="pm-row-top">
+                    <button class="pm-capture menu_button" type="button">${row.keyCombo ? escapeHtml(row.keyCombo) : '키 입력'}</button>
+                    <input type="text" class="pm-label text_pole" placeholder="이름 (예: 키스)" value="${escapeAttr(row.label || '')}">
+                    <button class="pm-delete menu_button" type="button" title="삭제">🗑</button>
+                </div>
+                <div class="pm-row-bottom">
+                    <input type="text" class="pm-command text_pole" placeholder='명령어 (예: /run &quot;키스&quot;)' value="${escapeAttr(row.command || '')}">
+                    <button class="pm-fill-qr menu_button" type="button" title="QR 라벨로 채우기">🏷</button>
+                </div>
             </div>
         `);
         $list.append($row);
@@ -269,10 +272,15 @@ function renderSettingsPanel() {
         <div id="peach-manager-panel">
             <div class="inline-drawer">
                 <div class="inline-drawer-toggle inline-drawer-header">
-                    <b>🍑 피치 매니저</b>
+                    <b>🍑 Peach Manager</b>
                     <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
                 </div>
                 <div class="inline-drawer-content">
+                    <div class="pm-tip">
+                        <b>이렇게 쓰세요</b>
+                        1. 키 버튼 누르고 원하는 키 조합 입력<br>
+                        2. 명령어 칸에 실행할 명령 입력 (QR이면 🏷 버튼으로 자동 채우기)
+                    </div>
                     <div class="pm-toprow">
                         <label class="checkbox_label">
                             <input type="checkbox" id="pm-enabled" ${settings.enabled ? 'checked' : ''}>
@@ -280,17 +288,11 @@ function renderSettingsPanel() {
                         </label>
                         <label class="checkbox_label">
                             <input type="checkbox" id="pm-toast" ${settings.showToast ? 'checked' : ''}>
-                            실행 알림(토스트) 표시
+                            실행 알림 표시
                         </label>
                     </div>
-                    <hr>
-                    <div id="pm-list"></div>
-                    <button id="pm-add" class="menu_button" type="button" style="margin-top:8px;">➕ 단축키 추가</button>
-                    <small class="pm-hint">
-                        키 조합 버튼을 눌러 원하는 키를 누르면 자동 등록됩니다 (Esc로 취소).<br>
-                        명령어 칸엔 QR 실행(<code>/run "라벨"</code>), 메시지 삭제(<code>/del 1</code>), 버튼 클릭(<code>/dom action=click #send_but</code>) 등 어떤 STscript도 넣을 수 있어요.<br>
-                        입력창에 타이핑 중일 땐 Ctrl/Alt/Meta 조합이 없는 단축키는 무시됩니다.
-                    </small>
+                    <div id="pm-list" class="pm-list"></div>
+                    <button id="pm-add" class="menu_button pm-add" type="button">➕ 단축키 추가</button>
                 </div>
             </div>
         </div>
