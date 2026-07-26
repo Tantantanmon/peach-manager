@@ -1,0 +1,58 @@
+#peach-manager-panel .pm-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(128,128,128,0.2);
+    flex-wrap: wrap;
+}
+#peach-manager-panel .pm-row:last-child {
+    border-bottom: none;
+}
+#peach-manager-panel .pm-capture {
+    min-width: 110px;
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+#peach-manager-panel .pm-capture.capturing {
+    background: #c0392b;
+    color: #fff;
+}
+#peach-manager-panel .pm-label {
+    width: 110px;
+    flex-shrink: 0;
+}
+#peach-manager-panel .pm-command {
+    flex: 1;
+    min-width: 160px;
+    font-family: monospace;
+    font-size: 12px;
+}
+#peach-manager-panel .pm-fill-qr,
+#peach-manager-panel .pm-delete {
+    padding: 4px 8px;
+    flex-shrink: 0;
+}
+#peach-manager-panel .pm-delete {
+    color: #c0392b;
+}
+#peach-manager-panel .pm-toprow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+#peach-manager-panel .pm-empty {
+    color: #999;
+    font-size: 12px;
+    padding: 8px 0;
+}
+#peach-manager-panel .pm-hint {
+    color: #888;
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+}
