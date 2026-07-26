@@ -67,8 +67,15 @@ function comboFromEvent(event) {
     return parts.join('+');
 }
 
-function hasModifier(comboStr) {
-    return /^(Ctrl|Alt|Shift|Meta)\+/.test(comboStr) || comboStr.includes('Ctrl+') || comboStr.includes('Alt+') || comboStr.includes('Meta+');
+function comboModifierParts(comboStr) {
+    const parts = comboStr.split('+');
+    parts.pop(); // 마지막 요소는 실제 키 이름이라 제외
+    return parts;
+}
+
+function hasStrongModifier(comboStr) {
+    const mods = comboModifierParts(comboStr);
+    return mods.includes('Ctrl') || mods.includes('Alt') || mods.includes('Meta');
 }
 
 function isTypingTarget(el) {
@@ -99,7 +106,7 @@ function onGlobalKeydown(event) {
     if (!combo) return;
 
     // 입력창/텍스트박스에 타이핑 중이면, 조합키(Ctrl/Alt/Meta)가 없는 단축키는 무시
-    if (isTypingTarget(document.activeElement) && !hasModifier(combo)) return;
+    if (isTypingTarget(document.activeElement) && !hasStrongModifier(combo)) return;
 
     const match = settings.shortcuts.find(s => s.keyCombo === combo);
     if (!match || !match.command) return;
@@ -160,6 +167,14 @@ function handleCapture(event) {
 
     const combo = comboFromEvent(event);
     if (!combo) return;
+
+    if (!hasStrongModifier(combo)) {
+        capturingRow.buttonEl.textContent = 'Ctrl 또는 Alt 포함해서 다시!';
+        setTimeout(() => {
+            if (capturingRow) capturingRow.buttonEl.textContent = '키를 누르세요…';
+        }, 1200);
+        return; // 저장하지 않고 계속 대기
+    }
 
     const settings = getSettings();
     const row = settings.shortcuts.find(s => s.id === capturingRow.rowId);
@@ -278,7 +293,7 @@ function renderSettingsPanel() {
                 <div class="inline-drawer-content">
                     <div class="pm-tip">
                         <b>이렇게 쓰세요</b>
-                        1. 키 버튼 누르고 원하는 키 조합 입력<br>
+                        1. 키 버튼 누르고 원하는 키 조합 입력 (Ctrl 또는 Alt 꼭 포함)<br>
                         2. 명령어 칸에 실행할 명령 입력 (QR이면 🏷 버튼으로 자동 채우기)
                     </div>
                     <div class="pm-toprow">
